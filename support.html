@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Care - Pay4Me</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>💳 Pay4Me</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="airtime.html">Airtime</a></li>
+                    <li><a href="data.html">Data</a></li>
+                    <li><a href="betting.html">Betting</a></li>
+                    <li><a href="tv.html">TV</a></li>
+                    <li><a href="support.html">Support</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="registerBtn" class="btn btn-register" onclick="location.href='register.html'">Register</button>
+                <button id="loginBtn" class="btn btn-outline" onclick="location.href='login.html'">Login</button>
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-hero">
+            <div class="container">
+                <h2>📞 Customer Care & Support</h2>
+                <p>We're here to help you 24/7</p>
+            </div>
+        </section>
+
+        <!-- Contact Information -->
+        <section class="support-section">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon">📞</div>
+                        <h3>Phone Support</h3>
+                        <p><strong>Hotline:</strong> 0800-PAY-4ME</p>
+                        <p><strong>Mobile:</strong> +234 801 234 5678</p>
+                        <p>Available 24/7</p>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">✉️</div>
+                        <h3>Email Support</h3>
+                        <p><strong>General:</strong> support@pay4me.com</p>
+                        <p><strong>Technical:</strong> tech@pay4me.com</p>
+                        <p>Response within 24 hours</p>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">💬</div>
+                        <h3>WhatsApp</h3>
+                        <p><strong>Chat:</strong> +234 801 234 5678</p>
+                        <p>Quick responses</p>
+                        <button class="btn btn-primary" onclick="window.open('https://wa.me/2348012345678', '_blank')">Chat Now</button>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon">📍</div>
+                        <h3>Office Address</h3>
+                        <p>123 Payment Street</p>
+                        <p>Victoria Island, Lagos</p>
+                        <p>Nigeria</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Support Form -->
+        <section class="support-section">
+            <div class="container">
+                <h2>Send Us a Message</h2>
+                <div class="service-card">
+                    <form id="supportForm" class="service-form">
+                        <div class="form-group">
+                            <label for="supportName">Full Name</label>
+                            <input type="text" id="supportName" placeholder="Enter your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportEmail">Email Address</label>
+                            <input type="email" id="supportEmail" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportPhone">Phone Number</label>
+                            <input type="tel" id="supportPhone" placeholder="08012345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportCategory">Issue Category</label>
+                            <select id="supportCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="airtime">Airtime Issues</option>
+                                <option value="data">Data Issues</option>
+                                <option value="betting">Betting Issues</option>
+                                <option value="tv">TV Subscription Issues</option>
+                                <option value="payment">Payment Problems</option>
+                                <option value="account">Account Issues</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportSubject">Subject</label>
+                            <input type="text" id="supportSubject" placeholder="Brief description" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="supportMessage">Message</label>
+                            <textarea id="supportMessage" rows="5" placeholder="Describe your issue in detail..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="support-section faq-section">
+            <div class="container">
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question">How long does it take to process transactions?</div>
+                        <div class="faq-answer">All transactions are processed instantly. You should receive confirmation within seconds.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">What should I do if my transaction fails?</div>
+                        <div class="faq-answer">If a transaction fails, please check your internet connection and try again. If the problem persists, contact our support team with your transaction reference number.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Is my payment information secure?</div>
+                        <div class="faq-answer">Yes, we use industry-standard encryption to protect all your payment information. Your data is safe with us.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I get a refund for a failed transaction?</div>
+                        <div class="faq-answer">Yes, if you were debited for a failed transaction, please contact us with your transaction reference. Refunds are processed within 24-48 hours.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Which networks do you support?</div>
+                        <div class="faq-answer">We support MTN, Glo, Airtel, and 9Mobile for both airtime and data services.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">How do I check my transaction history?</div>
+                        <div class="faq-answer">Login to your account and navigate to the transaction history section to view all your past transactions.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Pay4Me. All rights reserved.</p>
+            <p>Fast, Secure & Reliable Utility Payments</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalMessage"></div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="support.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airtime Recharge - Pay4Me</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>💳 Pay4Me</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="airtime.html">Airtime</a></li>
+                    <li><a href="data.html">Data</a></li>
+                    <li><a href="betting.html">Betting</a></li>
+                    <li><a href="tv.html">TV</a></li>
+                    <li><a href="support.html">Support</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="registerBtn" class="btn btn-register" onclick="location.href='register.html'">Register</button>
+                <button id="loginBtn" class="btn btn-outline" onclick="location.href='login.html'">Login</button>
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-hero">
+            <div class="container">
+                <h2>📱 Airtime Recharge</h2>
+                <p>Recharge airtime for all major networks instantly</p>
+            </div>
+        </section>
+
+        <section class="service-section">
+            <div class="container">
+                <div class="service-card">
+                    <form id="airtimeForm" class="service-form">
+                        <div class="form-group">
+                            <label for="airtimeNetwork">Select Network</label>
+                            <select id="airtimeNetwork" required>
+                                <option value="">Choose Network</option>
+                                <option value="mtn">MTN</option>
+                                <option value="glo">Glo</option>
+                                <option value="airtel">Airtel</option>
+                                <option value="9mobile">9Mobile</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="airtimePhone">Phone Number</label>
+                            <input type="tel" id="airtimePhone" placeholder="08012345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="airtimeAmount">Amount (₦)</label>
+                            <input type="number" id="airtimeAmount" min="50" max="50000" placeholder="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Recharge Now</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Pay4Me. All rights reserved.</p>
+            <p>Fast, Secure & Reliable Utility Payments</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalMessage"></div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="airtime.js"></script>
+</body>
+</html>
