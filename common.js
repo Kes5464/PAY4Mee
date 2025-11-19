@@ -3,7 +3,7 @@
 // API Base URL - configured for production
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:3000/api' 
-    : 'https://pay4me-com-ng.onrender.com/api';
+    : 'https://pay4mee.onrender.com/api';
 
 // Authentication State
 let currentUser = null;
