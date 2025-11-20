@@ -1,4 +1,7 @@
-require('dotenv').config(); // Load environment variables from .env file
+// Load environment variables from .env file (for local development only)
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 const express = require('express');
 const cors = require('cors');
@@ -43,6 +46,10 @@ function saveOTPs() {
 }
 
 // ==================== EMAIL & SMS CONFIGURATION ====================
+
+// Debug: Check if environment variables are loaded
+console.log('🔐 EMAIL_USER configured:', process.env.EMAIL_USER ? 'Yes ✓' : 'No ✗');
+console.log('🔐 EMAIL_PASS configured:', process.env.EMAIL_PASS ? 'Yes ✓' : 'No ✗');
 
 // Email transporter configuration (using Gmail as example)
 const emailTransporter = nodemailer.createTransport({
