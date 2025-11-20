@@ -51,6 +51,32 @@
                             <label for="registerPhone">Phone Number</label>
                             <input type="tel" id="registerPhone" placeholder="08012345678" required>
                         </div>
+                        
+                        <!-- OTP Verification Section -->
+                        <div class="form-group" id="otpSection" style="display: none;">
+                            <label for="otpInput">Verification Code</label>
+                            <div class="otp-input-wrapper">
+                                <input type="text" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}">
+                                <button type="button" class="btn btn-outline" id="sendOtpBtn" onclick="sendOTP()">Send OTP</button>
+                                <button type="button" class="btn btn-outline" id="verifyOtpBtn" onclick="verifyOTP()" style="display: none;">Verify</button>
+                            </div>
+                            <p class="otp-info">📱 We'll send a verification code to your email or phone</p>
+                            <p id="otpTimer" class="otp-timer" style="display: none;"></p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Verify Your Account</label>
+                            <div class="verification-options">
+                                <button type="button" class="btn btn-outline verification-btn" onclick="showOtpSection('email')">
+                                    📧 Verify via Email
+                                </button>
+                                <button type="button" class="btn btn-outline verification-btn" onclick="showOtpSection('phone')">
+                                    📱 Verify via SMS
+                                </button>
+                            </div>
+                            <p id="verificationStatus" class="verification-status"></p>
+                        </div>
+                        
                         <div class="form-group password-field">
                             <label for="registerPassword">Password</label>
                             <div class="password-input-wrapper">

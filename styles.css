@@ -186,6 +186,54 @@ nav a:hover {
     opacity: 1;
 }
 
+/* OTP Verification Styles */
+.verification-options {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.verification-btn {
+    flex: 1;
+    padding: 0.8rem 1rem !important;
+    font-size: 0.9rem !important;
+}
+
+.otp-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.otp-input-wrapper input {
+    flex: 1;
+}
+
+.otp-input-wrapper .btn {
+    padding: 0.8rem 1.5rem;
+    white-space: nowrap;
+}
+
+.otp-info {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.otp-timer {
+    font-size: 0.9rem;
+    color: #667eea;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+.verification-status {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    min-height: 20px;
+}
+
 /* Buttons */
 .btn {
     padding: 1rem 2rem;

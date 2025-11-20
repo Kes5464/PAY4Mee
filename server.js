@@ -14,6 +14,29 @@ const SECRET_KEY = process.env.SECRET_KEY || 'pay4me_secret_key_2025'; // In pro
 const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const TRANSACTIONS_FILE = path.join(DATA_DIR, 'transactions.json');
+const OTP_FILE = path.join(DATA_DIR, 'otps.json');
+
+// OTP storage (in-memory for demo, use Redis in production)
+let otpStore = {};
+
+// Load OTPs from file
+if (fs.existsSync(OTP_FILE)) {
+    try {
+        const data = fs.readFileSync(OTP_FILE, 'utf8');
+        otpStore = JSON.parse(data);
+    } catch (error) {
+        otpStore = {};
+    }
+}
+
+// Save OTPs to file
+function saveOTPs() {
+    try {
+        fs.writeFileSync(OTP_FILE, JSON.stringify(otpStore, null, 2));
+    } catch (error) {
+        console.error('Error saving OTPs:', error);
+    }
+}
 
 // Middleware
 app.use(cors({
@@ -102,6 +125,105 @@ function authenticateToken(req, res, next) {
 }
 
 // ==================== AUTHENTICATION ROUTES ====================
+
+// Send OTP endpoint
+app.post('/api/auth/send-otp', (req, res) => {
+    try {
+        const { email, phone, type } = req.body; // type: 'email' or 'phone'
+
+        if (!email && !phone) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Email or phone number required' 
+            });
+        }
+
+        // Generate 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const identifier = email || phone;
+        
+        // Store OTP with 5 minute expiry
+        otpStore[identifier] = {
+            otp: otp,
+            expiresAt: Date.now() + (5 * 60 * 1000), // 5 minutes
+            type: type || 'email'
+        };
+        
+        saveOTPs();
+
+        // In production, send actual SMS/Email here
+        // For demo, we'll just log it
+        console.log(`📧 OTP for ${identifier}: ${otp}`);
+        
+        res.json({ 
+            success: true, 
+            message: `OTP sent to your ${type || 'email'}`,
+            // For demo purposes only - remove in production
+            otp: otp 
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to send OTP' 
+        });
+    }
+});
+
+// Verify OTP endpoint
+app.post('/api/auth/verify-otp', (req, res) => {
+    try {
+        const { email, phone, otp } = req.body;
+        const identifier = email || phone;
+
+        if (!identifier || !otp) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Identifier and OTP required' 
+            });
+        }
+
+        const storedOTP = otpStore[identifier];
+
+        if (!storedOTP) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'No OTP found. Please request a new one.' 
+            });
+        }
+
+        // Check expiry
+        if (Date.now() > storedOTP.expiresAt) {
+            delete otpStore[identifier];
+            saveOTPs();
+            return res.status(400).json({ 
+                success: false, 
+                message: 'OTP expired. Please request a new one.' 
+            });
+        }
+
+        // Verify OTP
+        if (storedOTP.otp !== otp) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid OTP. Please try again.' 
+            });
+        }
+
+        // OTP verified successfully
+        delete otpStore[identifier];
+        saveOTPs();
+
+        res.json({ 
+            success: true, 
+            message: 'OTP verified successfully' 
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to verify OTP' 
+        });
+    }
+});
 
 // Register endpoint
 app.post('/api/auth/register', (req, res) => {
