@@ -241,11 +241,14 @@ app.post('/api/auth/send-otp', async (req, res) => {
 
         console.log(`📧 OTP for ${identifier}: ${otp}`);
         
+        // Only show OTP in demo mode (when no email/SMS credentials are set)
+        const isDemoMode = !process.env.EMAIL_USER && !process.env.TERMII_API_KEY;
+        
         res.json({ 
             success: true, 
-            message: `OTP sent to your ${type || 'email'}`,
-            // For demo purposes only - remove in production
-            otp: otp 
+            message: `OTP sent to your ${type || 'email'}. ${isDemoMode ? 'Demo Mode - Check console for OTP.' : 'Check your ' + (type === 'email' ? 'email inbox' : 'phone messages') + '!'}`,
+            // Only show OTP in demo mode for testing
+            ...(isDemoMode && { otp: otp })
         });
     } catch (error) {
         console.error('OTP sending error:', error);
