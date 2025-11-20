@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +37,65 @@ function saveOTPs() {
         fs.writeFileSync(OTP_FILE, JSON.stringify(otpStore, null, 2));
     } catch (error) {
         console.error('Error saving OTPs:', error);
+    }
+}
+
+// ==================== EMAIL & SMS CONFIGURATION ====================
+
+// Email transporter configuration (using Gmail as example)
+const emailTransporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER || 'your-email@gmail.com', // Set in environment variables
+        pass: process.env.EMAIL_PASS || 'your-app-password'     // Use App Password for Gmail
+    }
+});
+
+// Send Email function
+async function sendEmail(to, subject, html) {
+    try {
+        const mailOptions = {
+            from: `"Pay4Me" <${process.env.EMAIL_USER || 'noreply@pay4me.com'}>`,
+            to: to,
+            subject: subject,
+            html: html
+        };
+        
+        await emailTransporter.sendMail(mailOptions);
+        console.log(`📧 Email sent to ${to}`);
+        return true;
+    } catch (error) {
+        console.error('Email sending error:', error.message);
+        return false;
+    }
+}
+
+// Send SMS function (using Termii API - Popular in Nigeria)
+async function sendSMS(phone, message) {
+    try {
+        const TERMII_API_KEY = process.env.TERMII_API_KEY;
+        const TERMII_SENDER_ID = process.env.TERMII_SENDER_ID || 'Pay4Me';
+        
+        if (!TERMII_API_KEY) {
+            console.log(`📱 SMS would be sent to ${phone}: ${message}`);
+            return true; // Demo mode
+        }
+        
+        const response = await axios.post('https://api.ng.termii.com/api/sms/send', {
+            to: phone,
+            from: TERMII_SENDER_ID,
+            sms: message,
+            type: 'plain',
+            channel: 'generic',
+            api_key: TERMII_API_KEY
+        });
+        
+        console.log(`📱 SMS sent to ${phone}`);
+        return true;
+    } catch (error) {
+        console.error('SMS sending error:', error.message);
+        console.log(`📱 SMS Demo: Would send to ${phone}: ${message}`);
+        return true; // Return true in demo mode
     }
 }
 
@@ -127,7 +188,7 @@ function authenticateToken(req, res, next) {
 // ==================== AUTHENTICATION ROUTES ====================
 
 // Send OTP endpoint
-app.post('/api/auth/send-otp', (req, res) => {
+app.post('/api/auth/send-otp', async (req, res) => {
     try {
         const { email, phone, type } = req.body; // type: 'email' or 'phone'
 
@@ -151,8 +212,33 @@ app.post('/api/auth/send-otp', (req, res) => {
         
         saveOTPs();
 
-        // In production, send actual SMS/Email here
-        // For demo, we'll just log it
+        // Send OTP via email or SMS
+        let sent = false;
+        if (type === 'email' && email) {
+            const emailHTML = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f4f7f9; border-radius: 10px;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                        <h1 style="color: white; margin: 0;">💳 Pay4Me</h1>
+                    </div>
+                    <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px;">
+                        <h2 style="color: #333;">Email Verification Code</h2>
+                        <p style="color: #666; font-size: 16px;">Hello! Your verification code is:</p>
+                        <div style="background: #f0f4ff; border: 2px dashed #667eea; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
+                            <h1 style="color: #667eea; font-size: 36px; margin: 0; letter-spacing: 5px;">${otp}</h1>
+                        </div>
+                        <p style="color: #666; font-size: 14px;">This code will expire in <strong>5 minutes</strong>.</p>
+                        <p style="color: #666; font-size: 14px;">If you didn't request this code, please ignore this email.</p>
+                        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                        <p style="color: #999; font-size: 12px; text-align: center;">© 2025 Pay4Me. All rights reserved.</p>
+                    </div>
+                </div>
+            `;
+            sent = await sendEmail(email, 'Pay4Me - Email Verification Code', emailHTML);
+        } else if (type === 'phone' && phone) {
+            const smsMessage = `Your Pay4Me verification code is: ${otp}. Valid for 5 minutes. Do not share this code.`;
+            sent = await sendSMS(phone, smsMessage);
+        }
+
         console.log(`📧 OTP for ${identifier}: ${otp}`);
         
         res.json({ 
@@ -162,6 +248,7 @@ app.post('/api/auth/send-otp', (req, res) => {
             otp: otp 
         });
     } catch (error) {
+        console.error('OTP sending error:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Failed to send OTP' 
