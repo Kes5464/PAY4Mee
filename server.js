@@ -366,6 +366,7 @@ app.post('/api/auth/register', (req, res) => {
             email,
             phone,
             password: hashedPassword,
+            verified: true, // User is verified through OTP during registration
             registeredAt: new Date().toISOString()
         };
 

@@ -82,6 +82,13 @@ async function verifyOTP() {
     
     if (result.success) {
         otpVerified = true;
+        const email = document.getElementById('registerEmail').value;
+        const phone = document.getElementById('registerPhone').value;
+        
+        // Store verification status in localStorage
+        localStorage.setItem('otpVerified', 'true');
+        localStorage.setItem('verifiedIdentifier', verificationType === 'email' ? email : phone);
+        
         showModal('✅ Verification successful!', true);
         document.getElementById('verificationStatus').innerHTML = '<span style="color: #28a745; font-weight: bold;">✓ Verified</span>';
         document.getElementById('otpSection').style.display = 'none';
@@ -120,6 +127,14 @@ function startOtpTimer(seconds) {
 // Registration Form
 const registrationForm = document.getElementById('registrationForm');
 if (registrationForm) {
+    // Check if user was previously verified (in case of page refresh)
+    const storedVerification = localStorage.getItem('otpVerified');
+    const verifiedIdentifier = localStorage.getItem('verifiedIdentifier');
+    if (storedVerification === 'true' && verifiedIdentifier) {
+        otpVerified = true;
+        document.getElementById('verificationStatus').innerHTML = '<span style="color: #28a745; font-weight: bold;">✓ Verified</span>';
+    }
+    
     registrationForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -168,6 +183,10 @@ if (registrationForm) {
             authToken = result.token;
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             localStorage.setItem('authToken', authToken);
+            
+            // Clear OTP verification flags
+            localStorage.removeItem('otpVerified');
+            localStorage.removeItem('verifiedIdentifier');
             
             // Show success and redirect
             showModal('Registration successful! Welcome to Pay4Me! 🎉', true);
