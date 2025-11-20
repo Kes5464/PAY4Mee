@@ -28,7 +28,7 @@ function updateUIForLoggedInUser() {
     const registerBtnEl = document.getElementById('registerBtn');
     
     if (userNameEl && currentUser) {
-        userNameEl.textContent = `Hello, ${currentUser.name}`;
+        userNameEl.innerHTML = `<a href="profile.html" style="color: white; text-decoration: none;">Hello, ${currentUser.name} 👤</a>`;
     }
     if (userInfoEl) {
         userInfoEl.style.display = 'flex';

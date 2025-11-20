@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Pay4Me</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>💳 Pay4Me</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="airtime.html">Airtime</a></li>
+                    <li><a href="data.html">Data</a></li>
+                    <li><a href="betting.html">Betting</a></li>
+                    <li><a href="tv.html">TV</a></li>
+                    <li><a href="support.html">Support</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="registerBtn" class="btn btn-register" onclick="location.href='register.html'">Register</button>
+                <button id="loginBtn" class="btn btn-outline" onclick="location.href='login.html'">Login</button>
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="profile-section">
+            <div class="container">
+                <h2>My Profile</h2>
+                
+                <div class="profile-container">
+                    <!-- Profile Picture Section -->
+                    <div class="profile-picture-section">
+                        <div class="profile-picture-wrapper">
+                            <img id="profilePicture" src="https://via.placeholder.com/200?text=No+Image" alt="Profile Picture">
+                            <label for="profilePictureInput" class="upload-btn">
+                                📷 Change Photo
+                            </label>
+                            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+
+                    <!-- Profile Information Section -->
+                    <div class="profile-info-section">
+                        <div class="profile-card">
+                            <h3>Personal Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name</label>
+                                    <p id="displayName">Loading...</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email</label>
+                                    <p id="displayEmail">Loading...</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone Number</label>
+                                    <p id="displayPhone">Loading...</p>
+                                </div>
+                                <div class="info-item">
+                                    <label>Member Since</label>
+                                    <p id="displayJoinDate">Loading...</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="toggleEditMode()">✏️ Edit Information</button>
+                        </div>
+
+                        <!-- Edit Form (Hidden by default) -->
+                        <div class="profile-card edit-form" id="editForm" style="display: none;">
+                            <h3>Edit Information</h3>
+                            <form id="updateProfileForm">
+                                <div class="form-group">
+                                    <label for="editName">Full Name</label>
+                                    <input type="text" id="editName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editEmail">Email</label>
+                                    <input type="email" id="editEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editPhone">Phone Number</label>
+                                    <input type="tel" id="editPhone" required>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                                    <button type="button" class="btn btn-outline" onclick="toggleEditMode()">❌ Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- About Me Section -->
+                        <div class="profile-card">
+                            <h3>About Me</h3>
+                            <div id="aboutMeDisplay">
+                                <p id="aboutMeText">No bio added yet. Click edit to add something about yourself!</p>
+                                <button class="btn btn-outline" onclick="toggleAboutEdit()">✏️ Edit Bio</button>
+                            </div>
+                            <div id="aboutMeEdit" style="display: none;">
+                                <textarea id="aboutMeTextarea" rows="5" placeholder="Tell us about yourself..."></textarea>
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" onclick="saveAboutMe()">💾 Save Bio</button>
+                                    <button class="btn btn-outline" onclick="toggleAboutEdit()">❌ Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Pay4Me. All rights reserved.</p>
+            <p>Fast, Secure & Reliable Utility Payments</p>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalMessage"></div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>
