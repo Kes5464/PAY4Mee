@@ -43,9 +43,12 @@
                             <label for="loginEmail">Email</label>
                             <input type="email" id="loginEmail" placeholder="Enter your email" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group password-field">
                             <label for="loginPassword">Password</label>
-                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                                <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)">👁️</button>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Login</button>
                         <p class="auth-switch">Don't have an account? <a href="register.html">Register here</a></p>
