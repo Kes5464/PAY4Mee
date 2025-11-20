@@ -7,37 +7,64 @@ if (!currentUser) {
 
 // Load profile data on page load
 document.addEventListener('DOMContentLoaded', function() {
-    loadProfileData();
-    loadProfilePicture();
-    loadAboutMe();
+    loadProfileFromServer();
 });
 
-// Load profile data
+// Load profile data from server
+async function loadProfileFromServer() {
+    try {
+        const result = await apiRequest('/profile', 'GET');
+        
+        if (result.success && result.user) {
+            const user = result.user;
+            
+            // Update current user
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Display profile data
+            document.getElementById('displayName').textContent = user.name || 'N/A';
+            document.getElementById('displayEmail').textContent = user.email || 'N/A';
+            document.getElementById('displayPhone').textContent = user.phone || 'N/A';
+            
+            // Format join date
+            const joinDate = user.registeredAt ? new Date(user.registeredAt).toLocaleDateString() : 'N/A';
+            document.getElementById('displayJoinDate').textContent = joinDate;
+            
+            // Load profile picture
+            if (user.profilePicture) {
+                document.getElementById('profilePicture').src = user.profilePicture;
+            }
+            
+            // Load About Me
+            if (user.aboutMe) {
+                document.getElementById('aboutMeText').textContent = user.aboutMe;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        // Fallback to localStorage data
+        loadProfileData();
+    }
+}
+
+// Fallback: Load profile data from localStorage
 function loadProfileData() {
     if (currentUser) {
         document.getElementById('displayName').textContent = currentUser.name || 'N/A';
         document.getElementById('displayEmail').textContent = currentUser.email || 'N/A';
         document.getElementById('displayPhone').textContent = currentUser.phone || 'N/A';
         
-        // Format join date
-        const joinDate = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : 'N/A';
+        const joinDate = currentUser.registeredAt ? new Date(currentUser.registeredAt).toLocaleDateString() : 'N/A';
         document.getElementById('displayJoinDate').textContent = joinDate;
-    }
-}
-
-// Load profile picture from localStorage
-function loadProfilePicture() {
-    const savedPicture = localStorage.getItem('profilePicture_' + currentUser.email);
-    if (savedPicture) {
-        document.getElementById('profilePicture').src = savedPicture;
-    }
-}
-
-// Load About Me from localStorage
-function loadAboutMe() {
-    const savedAboutMe = localStorage.getItem('aboutMe_' + currentUser.email);
-    if (savedAboutMe) {
-        document.getElementById('aboutMeText').textContent = savedAboutMe;
+        
+        if (currentUser.profilePicture) {
+            document.getElementById('profilePicture').src = currentUser.profilePicture;
+        }
+        
+        if (currentUser.aboutMe) {
+            document.getElementById('aboutMeText').textContent = currentUser.aboutMe;
+        }
     }
 }
 
@@ -58,13 +85,22 @@ document.getElementById('profilePictureInput').addEventListener('change', functi
         }
 
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = async function(event) {
             const imageData = event.target.result;
             document.getElementById('profilePicture').src = imageData;
             
-            // Save to localStorage
-            localStorage.setItem('profilePicture_' + currentUser.email, imageData);
-            showModal('Profile picture updated successfully! 📸', true);
+            // Save to server
+            const result = await apiRequest('/profile', 'PUT', {
+                profilePicture: imageData
+            });
+            
+            if (result.success) {
+                currentUser.profilePicture = imageData;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showModal('Profile picture updated successfully! 📸', true);
+            } else {
+                showModal('Failed to save profile picture', false);
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -91,7 +127,6 @@ document.getElementById('updateProfileForm').addEventListener('submit', async fu
     e.preventDefault();
     
     const name = document.getElementById('editName').value;
-    const email = document.getElementById('editEmail').value;
     const phone = document.getElementById('editPhone').value;
     
     // Validate phone number
@@ -100,19 +135,26 @@ document.getElementById('updateProfileForm').addEventListener('submit', async fu
         return;
     }
     
-    // Update local user object
-    currentUser.name = name;
-    currentUser.email = email;
-    currentUser.phone = phone;
+    // Save to server
+    const result = await apiRequest('/profile', 'PUT', {
+        name: name,
+        phone: phone
+    });
     
-    // Save to localStorage
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    
-    // Update display
-    loadProfileData();
-    toggleEditMode();
-    
-    showModal('Profile updated successfully! ✅', true);
+    if (result.success) {
+        // Update local user object
+        currentUser.name = name;
+        currentUser.phone = phone;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Update display
+        loadProfileData();
+        toggleEditMode();
+        
+        showModal('Profile updated successfully! ✅', true);
+    } else {
+        showModal(result.message || 'Failed to update profile', false);
+    }
 });
 
 // Toggle About Me edit mode
@@ -136,16 +178,26 @@ function toggleAboutEdit() {
 }
 
 // Save About Me
-function saveAboutMe() {
+async function saveAboutMe() {
     const aboutMeText = document.getElementById('aboutMeTextarea').value.trim();
     
-    if (aboutMeText) {
-        document.getElementById('aboutMeText').textContent = aboutMeText;
-        localStorage.setItem('aboutMe_' + currentUser.email, aboutMeText);
+    // Save to server
+    const result = await apiRequest('/profile', 'PUT', {
+        aboutMe: aboutMeText
+    });
+    
+    if (result.success) {
+        if (aboutMeText) {
+            document.getElementById('aboutMeText').textContent = aboutMeText;
+            currentUser.aboutMe = aboutMeText;
+        } else {
+            document.getElementById('aboutMeText').textContent = 'No bio added yet. Click edit to add something about yourself!';
+            currentUser.aboutMe = '';
+        }
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
         showModal('Bio updated successfully! ✅', true);
     } else {
-        document.getElementById('aboutMeText').textContent = 'No bio added yet. Click edit to add something about yourself!';
-        localStorage.removeItem('aboutMe_' + currentUser.email);
+        showModal(result.message || 'Failed to save bio', false);
     }
     
     toggleAboutEdit();

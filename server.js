@@ -492,6 +492,75 @@ app.post('/api/support/submit', (req, res) => {
     }
 });
 
+// ==================== PROFILE ROUTES ====================
+
+// Get user profile
+app.get('/api/profile', authenticateToken, (req, res) => {
+    try {
+        const user = users.find(u => u.email === req.user.email);
+        
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        // Return user data without password
+        const { password, ...userData } = user;
+        res.json({ 
+            success: true, 
+            user: userData 
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
+// Update user profile
+app.put('/api/profile', authenticateToken, (req, res) => {
+    try {
+        const { name, phone, aboutMe, profilePicture } = req.body;
+        
+        const userIndex = users.findIndex(u => u.email === req.user.email);
+        
+        if (userIndex === -1) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        // Update user data
+        if (name) users[userIndex].name = name;
+        if (phone) users[userIndex].phone = phone;
+        if (aboutMe !== undefined) users[userIndex].aboutMe = aboutMe;
+        if (profilePicture !== undefined) users[userIndex].profilePicture = profilePicture;
+        
+        users[userIndex].updatedAt = new Date().toISOString();
+
+        // Save users to file
+        saveUsers();
+
+        // Return updated user without password
+        const { password, ...userData } = users[userIndex];
+        
+        res.json({ 
+            success: true, 
+            message: 'Profile updated successfully',
+            user: userData 
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error' 
+        });
+    }
+});
+
 // ==================== HEALTH CHECK ====================
 
 app.get('/api/health', (req, res) => {
