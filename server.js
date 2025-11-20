@@ -51,18 +51,27 @@ function saveOTPs() {
 console.log('🔐 EMAIL_USER configured:', process.env.EMAIL_USER ? 'Yes ✓' : 'No ✗');
 console.log('🔐 EMAIL_PASS configured:', process.env.EMAIL_PASS ? 'Yes ✓' : 'No ✗');
 
-// Email transporter configuration (using Gmail as example)
+// Email transporter configuration (using Gmail with explicit SMTP settings)
 const emailTransporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
         user: process.env.EMAIL_USER || 'your-email@gmail.com', // Set in environment variables
         pass: process.env.EMAIL_PASS || 'your-app-password'     // Use App Password for Gmail
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
 
 // Send Email function
 async function sendEmail(to, subject, html) {
     try {
+        // Verify transporter configuration
+        await emailTransporter.verify();
+        console.log('✅ Email transporter verified successfully');
+        
         const mailOptions = {
             from: `"Pay4Me" <${process.env.EMAIL_USER || 'noreply@pay4me.com'}>`,
             to: to,
@@ -70,11 +79,13 @@ async function sendEmail(to, subject, html) {
             html: html
         };
         
-        await emailTransporter.sendMail(mailOptions);
-        console.log(`📧 Email sent to ${to}`);
+        const info = await emailTransporter.sendMail(mailOptions);
+        console.log(`📧 Email sent successfully to ${to}`);
+        console.log('Message ID:', info.messageId);
         return true;
     } catch (error) {
-        console.error('Email sending error:', error.message);
+        console.error('❌ Email sending error:', error.message);
+        console.error('Full error:', error);
         return false;
     }
 }
